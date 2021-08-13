@@ -18,7 +18,6 @@ View(drone_diagnostics)
 
 
 # Creating a linear model for potential predictors in the dataset with the function FitAll
-
 FitAll = lm(outcomeR ~ ., data = drone_diagnostics)
 
 summary(FitAll)
@@ -60,4 +59,55 @@ summary(fitsome)
 # The next step would be to used recoded categorical variables to find  better model
 
 
+
+#Importing the new dataset containing categorical variables recoded as numeric
+drone_diagnosticsR2 <- read_xlsx('/Users/bekimbaya/Documents/Jean/woz-u/Program Final Project/drone_diag_dataALL.xlsx')
+View(drone_diagnosticsR2)
+
+
+# Creating a linear model for potential predictors in the dataset with the function FitAll
+FitAll2 = lm(outcomeR ~ ., data = drone_diagnosticsR2)
+
+summary(FitAll2)
+
+#---> Overall the p-value for this newer model is significant
+
+
+#--> We got some variables which we got NA's, so, we're going to drop those:
+drone_diagnosticsR2_Version2 <- select (drone_diagnosticsR2, - c('mavros: Battery_Rec', 'Logging_Rec', 'Terrain subsystem health_Rec','rc receiver_Rec',
+                         'motor outputs / control_Rec', 'x/y position control_Rec','z/altitude control_Rec',
+                         'yaw position_Rec','attitude stabilization_Rec', '3D angular rate control_Rec',
+                         'GPS_Rec','absolute pressure_Rec', '3D accelerometer_Rec', 'mavros: Heartbeat_Rec'))
+
+
+# 1
+# We're going to used the cleaned dataset version to build another model
+FitAll3 = lm(outcomeR ~ ., data = drone_diagnosticsR2_Version2)
+summary(FitAll3)
+
+
+#2
+# DOING A BACKWARD ELIMINATION with step() function
+
+step(FitAll3, direction = 'backward')
+
+#Here are the predictor of the best model :Received packets` + `Rx total bytes` + 
+#`Tx total bytes` + `Rx speed` + `Tx speed` + `Satellites visible` + 
+# `EPV (m)` + `Heartbeats since startup` + `CPU Load (%)` + 
+# `3D magnetometer_Rec` + `differential pressure_Rec
+
+
+
+#3
+# LET's CREATE A MODEL WITH JUST THE VARIABLES RETAINED, to see if this would be a better model
+
+fitsome3 = lm(outcomeR ~ `Received packets` + `Rx total bytes` + 
+                `Tx total bytes` + `Rx speed` + `Tx speed` + `Satellites visible` + 
+                `EPV (m)` + `Heartbeats since startup` + `CPU Load (%)` + 
+                `3D magnetometer_Rec` + `differential pressure_Rec`, data = drone_diagnosticsR2_Version2)
+
+summary(fitsome3)
+
+# After adding some categorical variables, 29.6% of the response variable is caused by these variables, 
+# At this point I'm not sure it is enought to predict faults and anomalies at 80% accuracy.
 
