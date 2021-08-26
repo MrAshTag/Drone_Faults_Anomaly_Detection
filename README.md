@@ -1,4 +1,4 @@
-# Drone_Faults_Anomaly_Detection
+# Drone_Fault_Anomaly_Detection
 
 
 #In this project we look at diagnostics data collected on Carbon Z drones to build a machine learning model that would predict faults and anomalies on carbon Z drone.
